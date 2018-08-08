@@ -1,0 +1,88 @@
+{
+    "debug": true,
+    "timezone": "Asia/Shanghai",
+    "baseurl": "http://fishroom.example.com",
+    "name": "teleboto",
+    "cmd_me": "tg_bot",
+    "redis": {
+        "unix_socket_path": "/var/run/redis/redis.sock",
+        "host": "redis-host",
+        "port": 6379,
+        "prefix": "fishroom"
+    },
+    "irc": {
+        "server": "irc.freenode.net",
+        "port": 6697,
+        "nick": "XiaoT",
+        "password": null,
+        "ssl": true,
+        "blacklist": [
+            "[Olaf]"
+        ]
+    },
+    "telegram": {
+        "token": "",
+        "me": null,
+        "admin": []
+    },
+    "xmpp": {
+        "server": "xmpp.jp",
+        "port": 5222,
+        "jid": "user@xmpp.jp/resource",
+        "password": "",
+        "nick": "XiaoT"
+    },
+    "gitter": {
+        "token": "",
+        "me": ""
+    },
+    "matrix": {
+        "server": "https://matrixim.cc:8448",
+        "user": "fishroom",
+        "password": "",
+        "nick": "bot_fishroom",
+        "bot_msg_pattern": "^mubot|^!wikipedia"
+    },
+    "wechat": {},
+    "qiniu": {
+        "access_key": "",
+        "secret_key": "",
+        "bucket": "",
+        "base_url": ""
+    },
+    "photo_store": {
+        "provider": "vim-cn",
+        "options": {
+            "client_id": ""
+        }
+    },
+    "chatlog": {
+        "host": "tornado-host",
+        "port": 8000,
+        "default_channel": "teleboto-dev"
+    },
+    "file_store": {
+        "provider": "qiniu"
+    },
+    "text_store": {
+        "provider": "vinergy",
+        "options": {}
+    },
+    "plugins": [
+        "pia",
+        "imglink",
+        "vote",
+        "hualao"
+    ],
+    "bindings": {
+        "archlinux-cn": {
+            "irc": "#archlinux-cn",
+            "telegram": "-1001031857103",
+            "xmpp": "chat@conference.xmpp.jp",
+            "matrix": "#archlinux:matrixim.cc"
+        },
+        "test": {
+            "wechat": "xxx chat room"
+        }
+    }
+}

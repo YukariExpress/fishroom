@@ -1,3 +1,2 @@
-/fishroom/config.py
+/fishroom/config/config.json
 /test/config.py
-config.py.production

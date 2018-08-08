@@ -1,3 +1,11 @@
+# Fishroom Configuration
+
+This directory contains the Fishroom configuration file `config.json`.
+
+You may reference `config.json.example` for details. The JSON file will be
+parsed into the following Python dictionary:
+
+```Python
 config = {
     "debug": True,
     "timezone": "Asia/Shanghai",
@@ -119,5 +127,4 @@ config = {
         }
     }
 }
-
-# vim: ft=python
+```
