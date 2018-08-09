@@ -1,34 +1,32 @@
-FROM python:3.5-slim
+FROM python:3.5-alpine
 
-RUN useradd fishroom
-USER fishroom
+COPY fishroom /fishroom
+COPY requirements.txt /fishroom
 
-# COPY fishroom /data/fishroom
-COPY requirements.txt /data/requirements.txt
+RUN apk add --update\
+	build-base\
+	libjpeg-turbo-dev\
+	libjpeg-turbo\
+	libmagic\
+	libpng-dev\
+	libpng\
+	libwebp-dev\
+	libwebp\
+	shared-mime-info\
+	tzdata\
+	zlib-dev\
+	zlib
 
-USER root
+RUN python3 -m ensurepip &&\
+	pip3 install -U pip setuptools &&\
+	pip3 install -r /fishroom/requirements.txt
 
-# RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian/ jessie main contrib non-free" > /etc/apt/sources.list && \
-# 	echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian/ jessie-backports main contrib non-free" >> /etc/apt/sources.list && \
-# 	echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian/ jessie-updates main contrib non-free" >> /etc/apt/sources.list && \
-# 	echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian-security/ jessie/updates main contrib non-free" >> /etc/apt/sources.list
+RUN apk del build-base\
+	libjpeg-turbo-dev\
+	libpng-dev\
+	libwebp-dev\
+	zlib-dev
 
-# RUN echo "[global]" > /etc/pip.conf && \
-# 	echo "index-url=https://pypi.tuna.tsinghua.edu.cn/simple" >> /etc/pip.conf
+WORKDIR /
 
-RUN apt-get update && \
-	apt-get install -y libmagic1 libjpeg62-turbo libjpeg-dev libpng-dev libwebp-dev zlib1g zlib1g-dev gcc mime-support
-
-RUN python3 -m ensurepip && \
-	pip3 install --upgrade pip setuptools 
-
-
-RUN pip3 install pillow && \
-	pip3 install -r /data/requirements.txt
-
-RUN apt-get remove -y libjpeg-dev libpng-dev libwebp-dev zlib1g-dev gcc && \
-	apt-get autoremove -y && \
-	apt-get clean all
-
-WORKDIR /data
-USER fishroom
+CMD [ "sh", "-c", "python -m fishroom.${FISHROOM_MODE}" ]

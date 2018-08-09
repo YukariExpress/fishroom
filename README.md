@@ -1,18 +1,21 @@
 # fishroom
 ![GPL license](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Proudly Powered by Python3](https://img.shields.io/badge/python-3.5-blue.svg)
-[![](https://img.shields.io/badge/%23chat-fishroom-brightgreen.svg)](https://fishroom.tuna.moe/)
+[![Join Fishroom](https://img.shields.io/badge/%23chat-fishroom-brightgreen.svg)](https://fishroom.tuna.moe/)
 
 Message forwarding for multiple IM protocols
 
 ## Motivation
-TUNA needs a chatroom, while each IM protocol/software has its own implementation for chatroom.
 
-Unlike email and mailing list, instant messaging is fragmented: everyone prefers different softwares.
-As a result, people of TUNA are divided by the IM they use, be it IRC, wechat, telegram, or XMPP.
+TUNA needs a chatroom, while each IM protocol/software has its own
+implementation for chatroom.
 
-To reunify TUNA, we created this project to relay messages between IM clients, so that people can enjoy a
-big party again.
+Unlike email and mailing list, instant messaging is fragmented: everyone prefers
+different softwares. As a result, people of TUNA are divided by the IM they use,
+be it IRC, WeChat, telegram, or XMPP.
+
+To reunify TUNA, we created this project to relay messages between IM clients,
+so that people can enjoy a big party again.
 
 ## Supported IMs
 
@@ -23,14 +26,15 @@ big party again.
 - Gitter
 - Actor (not yet)
 - Tox (not yet)
-- Wechat (maybe)
+- WeChat (maybe)
 
 ## Basic Architecture
 
-Fishroom consists of a *fishroom core* process, which routes messages among IMs and process commands, 
-and several IM handler processes to deal with different IMs. These components are connected via Redis pub/sub.
+Fishroom consists of a *fishroom core* process, which routes messages among IMs
+and process commands, and several IM handler processes to deal with different
+IMs. These components are connected via Redis pub/sub.
 
-```
+```Text
 +----------+
 | IRC      |<-+
 +----------+  |
@@ -51,93 +55,68 @@ and several IM handler processes to deal with different IMs. These components ar
 ## How to Use
 
 Clone me first
-```
+
+```ShellSession
 git clone https://github.com/tuna/fishroom
 cd fishroom
 ```
 
-### Docker Rocks!
+### Docker Rocks
 
-Get a redis docker and run it:
+Uses the following command to build the fishroom image.
 
-```
-docker pull redis:alpine
-docker run --name redis -v /var/lib/redis:/data -d redis:alpine
-```
-
-Modify the config file, and remember the redis hostname you specified in `config.py`.
-I suggest that just use `redis` as the hostname.
-
-```bash
-mv fishroom/config.py.example fishroom/config.py
-vim fishroom/config.py
+```ShellSession
+docker build --rm -f Dockerfile -t fishroom:latest .
 ```
 
-Modify `Dockerfile`, you may want to change the `sources.list` content.
-Build the docker for fishroom:
+Create the configuration file `config.json` and place it in the same directory
+as the `Dockerfile`.
 
-```
-docker build --tag fishroom:dev .
-```
+Adjust `docker-compose.yml` to adds the appropriate handlers.
+Using the environment variable `FISHROOM_MODE` to pass the name of the handler.
 
-Since the code of fishroom often changes, we mount the code as a volume, and link redis to it.
+Uses the following command to deploy the stack:
 
-You can test it using
-```
-# this is fishroom core
-docker run -it --rm --link redis:redis -v /path/to/fishroom/fishroom:/data/fishroom fishroom:dev python3 -u -m fishroom.fishroom
-
-# these are fishroom IM interfaces, not all of them are needed
-docker run -it --rm --link redis:redis -v /path/to/fishroom/fishroom:/data/fishroom fishroom:dev python3 -u -m fishroom.telegram
-docker run -it --rm --link redis:redis -v /path/to/fishroom/fishroom:/data/fishroom fishroom:dev python3 -u -m fishroom.IRC
-docker run -it --rm --link redis:redis -v /path/to/fishroom/fishroom:/data/fishroom fishroom:dev python3 -u -m fishroom.gitter
-docker run -it --rm --link redis:redis -v /path/to/fishroom/fishroom:/data/fishroom fishroom:dev python3 -u -m fishroom.xmpp
-```
-You may need `tmux` or simply multiple terminals to run the aforementioned foreground commands.
-
-If everything works, we run it as daemon.
-```
-docker run -d --name fishroom --link redis:redis -v /path/to/fishroom/fishroom:/data/fishroom fishroom:dev python3 -u -m fishroom.fishroom
-docker run -d --name fishroom --link redis:redis -v /path/to/fishroom/fishroom:/data/fishroom fishroom:dev python3 -u -m fishroom.telegram
+```ShellSession
+docker stack deploy -c docker-compose.yml fishroom
 ```
 
-To view the logs, use
-```
-docker logs fishroom
-```
+### Docker Sucks
 
-Next we run the web interface, if you have configured the `chat_logger` part in `config.py`.
-```
-docker run -d --name fishroom-web --link redis:redis -p 127.0.0.1:8000:8000 -v /path/to/fishroom/fishroom:/data/fishroom fishroom:dev python3 -u -m fishroom.web
-```
-Open your browser, and visit <http://127.0.0.1:8000/>, you should be able to view the web UI of fishoom.
+Install and run Redis first, assuming you use Ubuntu or Debian.
 
-
-### Docker Sucks!
-
-Install and run redis first, assuming you use ubuntu or debian.
-
-```
+```ShellSession
 apt-get install redis
 ```
 
-Modify the config file, the redis server should be on addr `127.0.0.1` and port `6379`.
+Modify the config file. the Redis server should listen on address `127.0.0.1`
+and port `6379`.
 
-```bash
-mv fishroom/config.py.example fishroom/config.py
-vim fishroom/config.py
+```ShellSession
+mv fishroom/config/config.json.example fishroom/config/config.json
+vim fishroom/config/config.json.example
 ```
 
-Ensure your python version is at least 3.5, next, we install the dependencies for fishroom.
+Ensure your python version is at least 3.5, next, we install the dependencies
+for fishroom.
 
-```
-apt-get install -y python3-dev python3-pip libmagic1 libjpeg-dev libpng-dev libwebp-dev zlib1g-dev gcc
+```ShellSession
+apt-get install -y\
+    python3-dev\
+    python3-pip\
+    libmagic1\
+    libjpeg-dev\
+    libpng-dev\
+    libwebp-dev\
+    zlib1g-dev\
+    gcc
 pip3 install --upgrade pip setuptools
 pip3 install -r requirements.txt
 ```
 
-Run fishroom and fishroom web.
-```
+Run fishroom and handlers.
+
+```ShellSession
 # run fishroom core
 python3 -m fishroom.fishroom
 
@@ -149,7 +128,9 @@ python3 -m fishroom.xmpp
 
 python3 -m fishroom.web
 ```
-Open your browser, and visit <http://127.0.0.1:8000/>, you should be able to view the web UI of fishoom.
+
+Open your browser and visit <http://127.0.0.1:8000/>. You should be able to see
+the web UI of fishroom.
 
 Good Luck!
 
@@ -159,13 +140,13 @@ Good Luck!
 - [Telegram Bot API](https://core.telegram.org/bots/api)
 - [IRCBindXMPP](https://github.com/lilydjwg/ircbindxmpp)
 - [SleekXMPP](https://pypi.python.org/pypi/sleekxmpp)
-	- Multi-User Chat Supported (http://sleekxmpp.com/getting_started/muc.html)
+  - [Multi-User Chat Supported](http://sleekxmpp.com/getting_started/muc.html)
 - [Tox-Sync](https://github.com/aitjcize/tox-irc-sync)
 - [qwx](https://github.com/xiangzhai/qwx)
 
-## LICENSE
+## License
 
-```
+```Text
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
