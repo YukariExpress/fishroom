@@ -1,7 +1,7 @@
 pytz
 redis
 marshmallow==2.1.0
-tornado==4.5.2
+tornado==6.0.3
 tornado-redis
 irc
 requests
