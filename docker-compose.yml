@@ -2,45 +2,25 @@ version: "3.6"
 services:
   fishroom:
     image: fishroom:latest
-    networks:
-      - fishnet
     environment:
       - FISHROOM_MODE=fishroom
     depends_on:
       - redis
-    secrets:
-      - source: fishroom_config
-        target: /fishroom/config/config.json
-        mode: 0400
     logging:
       options:
         max-size: "10M"
-  fishroom-irc:
+  irc:
     image: fishroom:latest
-    networks:
-      - fishnet
     environment:
       - FISHROOM_MODE=IRC
     depends_on:
       - fishroom
-    secrets:
-      - source: fishroom_config
-        target: /fishroom/config/config.json
-        mode: 0400
     logging:
       options:
         max-size: "10M"
   redis:
     image: redis:4.0-alpine
-    networks:
-      - fishnet
     logging:
       options:
         max-size: "10M"
 
-networks:
-  fishnet:
-
-secrets:
-  fishroom_config:
-    file: ./config.json

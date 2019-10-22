@@ -1,2 +1,4 @@
 /fishroom/config/config.json
 /test/config.py
+config.json
+docker-compose.override.yml
